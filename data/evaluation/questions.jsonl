@@ -1,0 +1,4 @@
+{"id": "q1", "question": "What embedding model does this project use?", "expected_sources": ["rag-pipeline-overview.md", "README.md", "DESIGN.md"], "reference_answer": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", "tags": ["en", "config"]}
+{"id": "q2", "question": "How are document and chunk identifiers generated?", "expected_sources": ["DESIGN.md", "rag-pipeline-overview.md"], "reference_answer": "document_id is a truncated SHA-256 of the normalized text; chunk_id is document_id plus chunk_index", "tags": ["en", "design"]}
+{"id": "q3", "question": "What is the capital of France?", "expected_sources": [], "reference_answer": "insufficient evidence — not in the corpus", "tags": ["en", "negative"]}
+{"id": "q4", "question": "Chunk size được đo bằng đơn vị gì?", "expected_sources": ["README.md", "DESIGN.md", "rag-pipeline-overview.md"], "tags": ["vi", "config"]}

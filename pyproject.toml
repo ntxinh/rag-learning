@@ -1,0 +1,74 @@
+[project]
+name = "rag-learning"
+version = "0.1.0"
+description = "A small, hand-rolled RAG application for learning"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.5",
+    "sentence-transformers>=3.0",
+    "torch>=2.0",
+    "chromadb>=0.5",
+    "pymupdf>=1.24",
+    "httpx>=0.27",
+    "typer>=0.12",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "types-requests>=2.32",
+]
+
+[project.scripts]
+rag = "rag_learning.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rag_learning"]
+
+[tool.ruff]
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+packages = ["rag_learning"]
+strict = true
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.mypy.overrides]]
+module = ["chromadb.*", "sentence_transformers.*", "fitz.*", "pymupdf.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["rag_learning.ingestion.loaders"]
+disallow_untyped_calls = false  # PyMuPDF API is untyped
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: hits real services (Ollama/Chroma); auto-skipped when unavailable",
+]

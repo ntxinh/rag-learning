@@ -1,0 +1,54 @@
+# Runtime and task runner configuration for rag-learning.
+# `mise install` provisions Python + uv; `mise run <task>` runs tasks.
+
+[tools]
+python = "3.12"
+uv = "latest"
+
+[env]
+# Ensure the src/ layout resolves even before editable install.
+PYTHONPATH = "src"
+
+[tasks.sync]
+description = "Install/sync all dependencies from uv.lock"
+run = "uv sync --all-groups"
+
+[tasks.test]
+description = "Run the test suite"
+run = "uv run pytest {{ arg(name='args', default='') }}"
+
+[tasks.lint]
+description = "Lint with Ruff"
+run = "uv run ruff check ."
+
+[tasks.format]
+description = "Format with Ruff"
+run = "uv run ruff format . && uv run ruff check --fix ."
+
+[tasks.typecheck]
+description = "Type-check with mypy"
+run = "uv run mypy src tests"
+
+[tasks.check]
+description = "Lint + typecheck + tests (CI-equivalent)"
+depends = ["lint", "typecheck", "test"]
+
+[tasks.api]
+description = "Run the FastAPI dev server"
+run = "uv run uvicorn rag_learning.api.app:app --reload"
+
+[tasks.ingest]
+description = "Ingest documents: mise run ingest -- [path]"
+run = "uv run rag ingest {{ arg(name='path', default='data/documents') }}"
+
+[tasks.ask]
+description = "Ask a question: mise run ask -- \"question\""
+run = "uv run rag ask {{ arg(name='question') }}"
+
+[tasks.eval]
+description = "Run the evaluation harness"
+run = "uv run rag evaluate {{ arg(name='dataset', default='data/evaluation/questions.jsonl') }}"
+
+[tasks.clean]
+description = "Delete local vector DB and caches (asks nothing — be sure)"
+run = "rm -rf storage/chroma .pytest_cache .mypy_cache .ruff_cache"
